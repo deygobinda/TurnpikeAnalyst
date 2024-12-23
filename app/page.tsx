@@ -1,101 +1,115 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import Navbar from "@/components/Navbar";
+import Autoplay from "embla-carousel-autoplay";
+import useEmblaCarousel from "embla-carousel-react";
+
+const carouselContent = [
+  {
+    title: "Global leader in ECM",
+    description:
+      "TurnPikeAnalyst is dedicated to helping you maximize the value of your data. When you work with us, you'll have access to highly trained analysts that use cutting-edge methods to glean actionable insights that will aid you in making strategic decisions and propelling rapid expansion. In order to take your company to new heights, we can help you release the data's hidden potential.",
+  },
+  {
+    title: "The Global Leader in ECM and Data Migration",
+    description:
+      "TurnPikeAnalyst stands as the global leader in ECM (Enterprise Content Management), ETL (Extract, Transform, Load), and ESB (Enterprise Service Bus) solutions. Our state-of-the-art tools and knowledge help companies worldwide streamline their operations, integrate their data without a hitch, and maximize productivity. Work with us to take advantage of these game-changing tools and maintain your position at the forefront of the digital world.",
+  },
+  {
+    title: "Best-in-Class Software",
+    description:
+      "TurnPikeAnalyst provides industry-leading software products for a wide range of company requirements. Our leading software blends state-of-the-art components with intuitive user interfaces and powerful capabilities to deliver outstanding functionality and results. Take your company to new heights of efficiency and productivity by utilizing top-tier software.",
+  },
+];
+
+export default function HeroSection() {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 3000 })]);
+  const [current, setCurrent] = useState(0);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCurrent(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+  }, [emblaApi, onSelect]);
+
+  const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div>
+      <div
+      className="min-h-screen bg-cover bg-center text-white flex flex-col"
+      style={{
+        backgroundImage: "url('https://www.turnpikeanalyst.com/wp-content/uploads/2023/05/6849678_3440660-scaled.jpg')",
+      }}
+    >
+      <Navbar />
+      <main className="flex-grow flex items-center justify-center py-20 bg-black bg-opacity-50">
+        <div className="container px-4">
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="overflow-hidden" ref={emblaRef}>
+              <div className="flex">
+                {carouselContent.map((item, index) => (
+                  <div key={index} className="flex-[0_0_100%] min-w-0">
+                    <div className="text-center max-w-2xl mx-auto">
+                      <h2 className="text-4xl font-bold mb-6">{item.title}</h2>
+                      <p className="mb-8 text-gray-300">{item.description}</p>
+                      <Button
+                        variant="outline"
+                        className="bg-transparent text-white border-teal-500 hover:bg-teal-500 hover:text-white transition-colors duration-300"
+                      >
+                        Details
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-center mt-8 space-x-2">
+              {carouselContent.map((_, index) => (
+                <Button
+                  key={index}
+                  variant="ghost"
+                  size="sm"
+                  className={`w-2 h-2 rounded-full ${
+                    index === current ? "bg-teal-500" : "bg-gray-400"
+                  }`}
+                  onClick={() => scrollTo(index)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
+    
+    </div>
+  );
+}
+
+function ArrowRight(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </svg>
   );
 }
